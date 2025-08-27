@@ -94,6 +94,34 @@
         );
         border: 1px solid rgba(255, 255, 255, 0.08);
       }
+      /* New styles for Hero section */
+      .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+      }
+      .hover\:scale-105:hover {
+        transform: scale(1.05);
+      }
+      .blur-3xl {
+        --tw-blur: blur(64px);
+        filter: var(--tw-blur);
+      }
+      .bg-gradient-to-br {
+        background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+      }
+      .from-slate-900 {
+        --tw-gradient-from: #0f172a;
+        --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(15, 23, 42, 0));
+      }
+      .via-purple-900 {
+        --tw-gradient-stops: var(--tw-gradient-from), #581c87, var(--tw-gradient-to, rgba(88, 28, 135, 0));
+      }
+      .to-slate-900 {
+        --tw-gradient-to: #0f172a;
+      }
     </style>
   </head>
 
@@ -104,31 +132,12 @@
       const { useRef } = React;
 
       function Logo({ className = 'w-10 h-10' }) {
-        // Inline SVG logo (stylized MVP arrow mark)
         return (
-          <svg
-            className={className}
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-label="MVP to Production Logo"
-          >
-            <rect width="100" height="100" rx="20" fill="transparent" />
-            <path
-              d="M18 72V28h12l12 22 12-22h12v44H66V44L54 66H46L34 44v28H18Z"
-              fill="#00E29B"
-            />
-            <path
-              d="M64 28h12c9 0 16 7 16 16 0 7-4 12-10 15-3 2-7 3-12 3h-6V52h6c6 0 10-3 10-8s-4-8-10-8h-6V28Z"
-              fill="#00E29B"
-              opacity="0.95"
-            />
-            <path
-              d="M58 52l6-10 6 10h-12Z"
-              fill="#ffffff"
-              opacity="0.95"
-            />
-          </svg>
+          <img
+            src="./profile.jpeg"
+            alt="MVP to Production Logo"
+            className={`${className} object-contain`}
+          />
         );
       }
 
@@ -137,7 +146,7 @@
           <header className="sticky top-0 z-50 bg-ink/70 backdrop-blur border-b border-white/5">
             <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Logo className="w-9 h-9" />
+                <Logo className="w-12 h-12" />
                 <span className="font-display font-extrabold tracking-tight text-lg">
                   MVP to <span className="text-brand">Production</span>
                 </span>
@@ -160,54 +169,78 @@
       }
 
       function Hero({ onPrimary }) {
+        const [isCalendlyOpen, setIsCalendlyOpen] = React.useState(false);
+        
         return (
-          <section
-            className="relative overflow-hidden bg-paper"
-            style={{
-              backgroundImage:
-                "url('./cover.jpeg'), var(--bg)",
-              '--bg': 'radial-gradient(1200px 600px at 10% -20%, rgba(0,226,155,0.15), transparent 60%), radial-gradient(1200px 600px at 110% 120%, rgba(79,243,198,0.15), transparent 60%)',
-              backgroundSize: 'cover, cover',
-              backgroundPosition: 'center, center',
-            }}
-          >
-            <div className="absolute inset-0 bg-ink/60" />
-            <div className="relative mx-auto max-w-7xl px-4 pt-24 pb-28 sm:pb-36">
-              <div className="max-w-3xl">
-                <div className="inline-flex items-center gap-2 glass px-3 py-1 rounded-full text-xs text-white/80 mb-6">
-                  <span className="h-2 w-2 rounded-full bg-brand"></span>
-                  mvptoprod.com — Launch in <strong className="ml-1">2 days</strong>
+          <section className="relative pt-20 pb-16 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+              <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-emerald-500/20"></div>
+            </div>
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+                <div className="text-center lg:text-left">
+                  <div className="mb-6 inline-block bg-teal-500/10 text-teal-400 border border-teal-500/20 px-3 py-1 rounded-full text-sm">
+                    🚀 Launch in Days, Not Months
+                  </div>
+                  <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                    Stop worrying about infrastructure.
+                    <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent block">
+                      Start building your product.
+                    </span>
+                  </h1>
+                  <h2 className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+                    We help SaaS founders launch, scale, and manage production-ready infrastructure 
+                    so you can focus on growth — not DevOps headaches.
+                  </h2>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <button
+                      onClick={onPrimary}
+                      className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-8 py-6 rounded-lg animate-pulse hover:animate-none transition-all duration-300 transform hover:scale-105"
+                    >
+                      Get Started for $497
+                      <span className="ml-2">→</span>
+                    </button>
+                    <button
+                      onClick={() => setIsCalendlyOpen(true)}
+                      className="border border-teal-400 text-teal-400 hover:bg-teal-500 hover:text-white text-lg px-8 py-6 rounded-lg transition-all"
+                    >
+                      Book a Free Call
+                    </button>
+                  </div>
                 </div>
-                <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight">
-                  Stop worrying about infrastructure.
-                  <br />
-                  <span className="text-brand">Start building your product.</span>
-                </h1>
-                <p className="mt-6 text-white/80 text-lg sm:text-xl max-w-2xl">
-                  We help SaaS founders launch, scale, and manage production-ready
-                  infrastructure so you can focus on growth — not DevOps headaches.
-                </p>
-                <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <button
-                    onClick={onPrimary}
-                    className="btn-primary text-ink px-6 py-3 rounded-2xl font-semibold shadow-glow animate-bump"
-                  >
-                    Get Started for $497
-                  </button>
-                  <a
-                    href="#offers"
-                    className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30 transition"
-                  >
-                    View Offers
-                  </a>
+                <div className="relative">
+                  <div className="relative z-10">
+                    <div className="w-full h-64 bg-gradient-to-r from-slate-800 to-purple-800 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <div className="text-3xl font-bold mb-2 bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">LAUNCH IN</div>
+                        <div className="text-6xl font-bold">2 DAY</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 rounded-2xl blur-3xl"></div>
                 </div>
               </div>
             </div>
+            <CalendlyModal 
+              isOpen={isCalendlyOpen} 
+              onClose={() => setIsCalendlyOpen(false)} 
+            />
           </section>
         );
       }
 
       function OfferCard({ title, price, description, cta, href, featured }) {
+        const [isCalendlyOpen, setIsCalendlyOpen] = React.useState(false);
+        const isBookCall = cta === "Book a Free Call";
+
+        const handleClick = () => {
+          if (isBookCall) {
+            setIsCalendlyOpen(true);
+          } else {
+            document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+          }
+        };
+
         return (
           <div
             className={
@@ -231,8 +264,8 @@
               </p>
               <p className="mt-4 text-white/80">{description}</p>
             </div>
-            <a
-              href={href}
+            <button
+              onClick={handleClick}
               className={
                 'mt-6 inline-flex justify-center items-center rounded-xl px-5 py-3 font-semibold transition ' +
                 (featured
@@ -241,7 +274,13 @@
               }
             >
               {cta}
-            </a>
+            </button>
+            {isBookCall && (
+              <CalendlyModal 
+                isOpen={isCalendlyOpen} 
+                onClose={() => setIsCalendlyOpen(false)} 
+              />
+            )}
           </div>
         );
       }
@@ -278,7 +317,7 @@
                   price="Custom (Book a Call)"
                   description="Complete setup with monitoring, staging, production pipelines, and alerting for reliability."
                   cta="Book a Free Call"
-                  href="https://calendly.com/mvptoprod/intro-call"
+                  href="https://calendly.com/mvptoprod/30min"
                 />
               </div>
             </div>
@@ -367,8 +406,87 @@
         );
       }
 
+      function CalendlyModal({ isOpen, onClose }) {
+        if (!isOpen) return null;
+        
+        return (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="flex min-h-screen items-center justify-center p-4">
+              <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose}></div>
+              <div className="relative bg-paper rounded-2xl w-full max-w-4xl h-[80vh] shadow-xl">
+                <button 
+                  onClick={onClose}
+                  className="absolute top-4 right-4 text-white/60 hover:text-white"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <div className="w-full h-full">
+                  <iframe
+                    src="https://calendly.com/mvptoprod/30min"
+                    className="w-full h-full rounded-2xl"
+                    frameBorder="0"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       function Contact() {
-        // Static form designed for GitHub Pages using mailto fallback
+        const [isCalendlyOpen, setIsCalendlyOpen] = React.useState(false);
+        const [formState, setFormState] = React.useState({
+          status: 'idle', // idle, submitting, success, error
+          error: null
+        });
+        const [formData, setFormData] = React.useState({
+          name: '',
+          email: '',
+          company: '',
+          offer: 'Quick Launch – $497',
+          message: ''
+        });
+
+        const handleSubmit = async (e) => {
+          e.preventDefault();
+          setFormState({ status: 'submitting', error: null });
+
+          try {
+            const response = await fetch('https://usebasin.com/f/b06e024d33ee', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+              throw new Error('Form submission failed');
+            }
+
+            setFormState({ status: 'success', error: null });
+            setFormData({
+              name: '',
+              email: '',
+              company: '',
+              offer: 'Quick Launch – $497',
+              message: ''
+            });
+          } catch (error) {
+            setFormState({ 
+              status: 'error', 
+              error: 'Failed to submit form. Please try again or email us directly.'
+            });
+          }
+        };
+
+        const handleInputChange = (e) => {
+          const { name, value } = e.target;
+          setFormData(prev => ({ ...prev, [name]: value }));
+        };
+
         return (
           <section id="contact" className="bg-paper">
             <div className="mx-auto max-w-3xl px-4 py-20">
@@ -378,78 +496,115 @@
                 </h3>
                 <p className="mt-2 text-white/70">
                   Prefer a call?{' '}
-                  <a
+                  <button
+                    onClick={() => setIsCalendlyOpen(true)}
                     className="text-brand hover:underline"
-                    href="https://calendly.com/mvptoprod/intro-call"
                   >
                     Book a free call
-                  </a>
+                  </button>
                   .
                 </p>
 
-                <form
-                  className="mt-8 grid grid-cols-1 gap-5"
-                  action="mailto:hello@mvptoprod.com"
-                  method="POST"
-                  encType="text/plain"
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <input
-                      required
-                      name="name"
-                      placeholder="Your name"
-                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
-                    />
-                    <input
-                      required
-                      type="email"
-                      name="email"
-                      placeholder="Your email"
-                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
-                    />
+                {formState.status === 'success' ? (
+                  <div className="mt-8 p-6 rounded-xl bg-brand/20 text-center">
+                    <div className="text-brand text-xl font-semibold mb-2">Thanks for reaching out!</div>
+                    <p className="text-white/80">We'll get back to you within 24 hours.</p>
                   </div>
-
-                  <input
-                    name="company"
-                    placeholder="Company"
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
-                  />
-
-                  <select
-                    name="offer"
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                ) : (
+                  <form
+                    className="mt-8 grid grid-cols-1 gap-5"
+                    onSubmit={handleSubmit}
                   >
-                    <option value="Quick Launch – $497">Quick Launch – $497</option>
-                    <option value="Scaling Services – starting $1,499">
-                      Scaling Services – starting $1,499
-                    </option>
-                    <option value="Full Environment Setup – custom">
-                      Full Environment Setup – custom
-                    </option>
-                  </select>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <input
+                        required
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        placeholder="Your name"
+                        className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                      />
+                      <input
+                        required
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="Your email"
+                        className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                      />
+                    </div>
 
-                  <textarea
-                    name="message"
-                    rows="4"
-                    placeholder="What are you building? Any links or context we should know?"
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
-                  ></textarea>
+                    <input
+                      name="company"
+                      value={formData.company}
+                      onChange={handleInputChange}
+                      placeholder="Company"
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                    />
 
-                  <button
-                    type="submit"
-                    className="btn-primary text-ink font-semibold rounded-xl px-6 py-3 shadow-glow"
-                    title="Sends via your email client (works on GitHub Pages)"
-                  >
-                    Submit Inquiry
-                  </button>
-                </form>
+                    <select
+                      name="offer"
+                      value={formData.offer}
+                      onChange={handleInputChange}
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                    >
+                      <option value="Quick Launch – $497">Quick Launch – $497</option>
+                      <option value="Scaling Services – starting $1,499">
+                        Scaling Services – starting $1,499
+                      </option>
+                      <option value="Full Environment Setup – custom">
+                        Full Environment Setup – custom
+                      </option>
+                    </select>
+
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      rows="4"
+                      placeholder="What are you building? Any links or context we should know?"
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                    ></textarea>
+
+                    {formState.error && (
+                      <div className="text-red-400 text-sm">{formState.error}</div>
+                    )}
+
+                    <button
+                      type="submit"
+                      disabled={formState.status === 'submitting'}
+                      className={`btn-primary text-ink font-semibold rounded-xl px-6 py-3 shadow-glow relative ${
+                        formState.status === 'submitting' ? 'opacity-80' : ''
+                      }`}
+                    >
+                      {formState.status === 'submitting' ? (
+                        <span className="flex items-center justify-center">
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-ink" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Submitting...
+                        </span>
+                      ) : (
+                        'Submit Inquiry'
+                      )}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
+            <CalendlyModal 
+              isOpen={isCalendlyOpen} 
+              onClose={() => setIsCalendlyOpen(false)} 
+            />
           </section>
         );
       }
 
       function FinalCTA() {
+        const [isCalendlyOpen, setIsCalendlyOpen] = React.useState(false);
+        
         return (
           <section className="relative overflow-hidden">
             <div className="absolute inset-0 bg-heroGradient" />
@@ -465,12 +620,19 @@
                   <a href="#contact" className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30">
                     Scale My Startup
                   </a>
-                  <a href="https://calendly.com/mvptoprod/intro-call" className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30">
+                  <button 
+                    onClick={() => setIsCalendlyOpen(true)}
+                    className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30"
+                  >
                     Book a Free Call
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
+            <CalendlyModal 
+              isOpen={isCalendlyOpen} 
+              onClose={() => setIsCalendlyOpen(false)} 
+            />
           </section>
         );
       }
@@ -480,7 +642,7 @@
           <footer className="border-t border-white/5 bg-ink">
             <div className="mx-auto max-w-7xl px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="flex items-center gap-3">
-                <Logo className="w-8 h-8" />
+                <Logo className="w-10 h-10" />
                 <div>
                   <p className="font-semibold">MVP to Production</p>
                   <p className="text-xs text-white/60">mvptoprod.com</p>
