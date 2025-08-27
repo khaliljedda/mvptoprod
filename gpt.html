@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>MVP to Production – DevOps for SaaS</title>
+    <meta
+      name="description"
+      content="MVP to Production helps SaaS founders launch, scale, and manage production-ready infrastructure so you can focus on growth — not DevOps headaches."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+              display: ['Poppins', 'Inter', 'ui-sans-serif'],
+            },
+            colors: {
+              brand: {
+                DEFAULT: '#00E29B',
+                dark: '#00B67D',
+                mint: '#4FF3C6',
+              },
+              ink: '#0C0E10',
+              paper: '#0F1320',
+            },
+            boxShadow: {
+              glow: '0 0 0 6px rgb(0 226 155 / 15%), 0 10px 30px -10px rgb(0 226 155 / 35%)',
+            },
+            backgroundImage: {
+              heroGradient:
+                'radial-gradient(1200px 600px at 10% -20%, rgba(0,226,155,0.25), transparent 60%), radial-gradient(1200px 600px at 110% 120%, rgba(79,243,198,0.25), transparent 60%)',
+            },
+            keyframes: {
+              bump: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-2px)' },
+              },
+              shine: {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              },
+            },
+            animation: {
+              bump: 'bump 1.8s ease-in-out infinite',
+              shine: 'shine 2s linear infinite',
+            },
+          },
+        },
+        darkMode: 'class',
+      };
+    </script>
+
+    <!-- React + ReactDOM (UMD) and Babel for JSX in a single file -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      html,
+      body,
+      #root {
+        height: 100%;
+        background: #0b0e14;
+      }
+      /* subtle animated gradient border for primary buttons */
+      .btn-primary {
+        background-image: linear-gradient(90deg, #00e29b, #4ff3c6, #00e29b);
+        background-size: 200% 100%;
+      }
+      .btn-primary:hover {
+        animation: shine 2s linear infinite;
+      }
+      .glass {
+        backdrop-filter: blur(10px);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.02)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+    </style>
+  </head>
+
+  <body class="text-white antialiased">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useRef } = React;
+
+      function Logo({ className = 'w-10 h-10' }) {
+        // Inline SVG logo (stylized MVP arrow mark)
+        return (
+          <svg
+            className={className}
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="MVP to Production Logo"
+          >
+            <rect width="100" height="100" rx="20" fill="transparent" />
+            <path
+              d="M18 72V28h12l12 22 12-22h12v44H66V44L54 66H46L34 44v28H18Z"
+              fill="#00E29B"
+            />
+            <path
+              d="M64 28h12c9 0 16 7 16 16 0 7-4 12-10 15-3 2-7 3-12 3h-6V52h6c6 0 10-3 10-8s-4-8-10-8h-6V28Z"
+              fill="#00E29B"
+              opacity="0.95"
+            />
+            <path
+              d="M58 52l6-10 6 10h-12Z"
+              fill="#ffffff"
+              opacity="0.95"
+            />
+          </svg>
+        );
+      }
+
+      function Nav({ onCTAClick }) {
+        return (
+          <header className="sticky top-0 z-50 bg-ink/70 backdrop-blur border-b border-white/5">
+            <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Logo className="w-9 h-9" />
+                <span className="font-display font-extrabold tracking-tight text-lg">
+                  MVP to <span className="text-brand">Production</span>
+                </span>
+              </div>
+              <nav className="hidden sm:flex items-center gap-6 text-sm text-white/80">
+                <a href="#offers" className="hover:text-white">Offers</a>
+                <a href="#why" className="hover:text-white">Why Us</a>
+                <a href="#testimonials" className="hover:text-white">Testimonials</a>
+                <a href="#contact" className="hover:text-white">Contact</a>
+                <button
+                  onClick={onCTAClick}
+                  className="btn-primary px-4 py-2 rounded-xl font-semibold text-ink shadow-glow"
+                >
+                  Get Started for $497
+                </button>
+              </nav>
+            </div>
+          </header>
+        );
+      }
+
+      function Hero({ onPrimary }) {
+        return (
+          <section
+            className="relative overflow-hidden bg-paper"
+            style={{
+              backgroundImage:
+                "url('./cover.jpeg'), var(--bg)",
+              '--bg': 'radial-gradient(1200px 600px at 10% -20%, rgba(0,226,155,0.15), transparent 60%), radial-gradient(1200px 600px at 110% 120%, rgba(79,243,198,0.15), transparent 60%)',
+              backgroundSize: 'cover, cover',
+              backgroundPosition: 'center, center',
+            }}
+          >
+            <div className="absolute inset-0 bg-ink/60" />
+            <div className="relative mx-auto max-w-7xl px-4 pt-24 pb-28 sm:pb-36">
+              <div className="max-w-3xl">
+                <div className="inline-flex items-center gap-2 glass px-3 py-1 rounded-full text-xs text-white/80 mb-6">
+                  <span className="h-2 w-2 rounded-full bg-brand"></span>
+                  mvptoprod.com — Launch in <strong className="ml-1">2 days</strong>
+                </div>
+                <h1 className="font-display text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight">
+                  Stop worrying about infrastructure.
+                  <br />
+                  <span className="text-brand">Start building your product.</span>
+                </h1>
+                <p className="mt-6 text-white/80 text-lg sm:text-xl max-w-2xl">
+                  We help SaaS founders launch, scale, and manage production-ready
+                  infrastructure so you can focus on growth — not DevOps headaches.
+                </p>
+                <div className="mt-8 flex flex-wrap items-center gap-4">
+                  <button
+                    onClick={onPrimary}
+                    className="btn-primary text-ink px-6 py-3 rounded-2xl font-semibold shadow-glow animate-bump"
+                  >
+                    Get Started for $497
+                  </button>
+                  <a
+                    href="#offers"
+                    className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30 transition"
+                  >
+                    View Offers
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function OfferCard({ title, price, description, cta, href, featured }) {
+        return (
+          <div
+            className={
+              'rounded-2xl p-6 sm:p-8 h-full flex flex-col justify-between ' +
+              (featured
+                ? 'bg-gradient-to-b from-white/10 to-white/5 border border-white/10 shadow-xl'
+                : 'glass')
+            }
+          >
+            <div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-display text-2xl font-bold">{title}</h3>
+                {featured && (
+                  <span className="text-[10px] uppercase tracking-widest bg-brand/20 text-brand px-2 py-1 rounded">
+                    Most Popular
+                  </span>
+                )}
+              </div>
+              <p className="mt-4 text-brand text-3xl font-extrabold">
+                {price}
+              </p>
+              <p className="mt-4 text-white/80">{description}</p>
+            </div>
+            <a
+              href={href}
+              className={
+                'mt-6 inline-flex justify-center items-center rounded-xl px-5 py-3 font-semibold transition ' +
+                (featured
+                  ? 'btn-primary text-ink shadow-glow'
+                  : 'border border-white/15 hover:border-white/30')
+              }
+            >
+              {cta}
+            </a>
+          </div>
+        );
+      }
+
+      function Offers() {
+        return (
+          <section id="offers" className="bg-ink relative">
+            <div className="mx-auto max-w-7xl px-4 py-20">
+              <h2 className="font-display text-3xl sm:text-5xl font-extrabold">
+                Choose your path to <span className="text-brand">production</span>
+              </h2>
+              <p className="mt-4 text-white/80 max-w-2xl">
+                Three focused offers to match your stage. Clear scope, fast delivery, real results.
+              </p>
+
+              <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <OfferCard
+                  title="Quick Launch"
+                  price="$497"
+                  description="Domain setup, app deployment, SSL, and production-ready infra. Get your MVP live fast."
+                  cta="Get Started"
+                  href="#contact"
+                  featured={true}
+                />
+                <OfferCard
+                  title="Scaling Services"
+                  price="Starting at $1,499"
+                  description="Optimize CI/CD, automate deployments, and scale infra to handle thousands of users."
+                  cta="Scale My Startup"
+                  href="#contact"
+                />
+                <OfferCard
+                  title="Full Environment Setup"
+                  price="Custom (Book a Call)"
+                  description="Complete setup with monitoring, staging, production pipelines, and alerting for reliability."
+                  cta="Book a Free Call"
+                  href="https://calendly.com/mvptoprod/intro-call"
+                />
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function WhyUs() {
+        const items = [
+          { icon: '⚡', text: 'Launch in days, not months.' },
+          { icon: '📈', text: 'Scale smoothly as your user base grows.' },
+          { icon: '🔒', text: 'Production-grade security and monitoring.' },
+          { icon: '💸', text: 'Save money with automation vs hiring a full DevOps team.' },
+        ];
+
+        return (
+          <section id="why" className="bg-paper bg-heroGradient">
+            <div className="mx-auto max-w-7xl px-4 py-20">
+              <h2 className="font-display text-3xl sm:text-5xl font-extrabold">
+                Why choose <span className="text-brand">us</span>?
+              </h2>
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {items.map((it, i) => (
+                  <div key={i} className="glass rounded-2xl p-6">
+                    <div className="text-3xl">{it.icon}</div>
+                    <p className="mt-3 text-white/80">{it.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Testimonial({ quote, name, role }) {
+        return (
+          <div className="glass rounded-2xl p-6 h-full">
+            <div className="flex items-center gap-4">
+              <img
+                src="./profile.jpeg"
+                alt={`${name} headshot`}
+                className="h-12 w-12 rounded-full object-cover"
+              />
+              <div>
+                <p className="font-semibold">{name}</p>
+                <p className="text-white/60 text-sm">{role}</p>
+              </div>
+            </div>
+            <p className="mt-4 text-white/80">&ldquo;{quote}&rdquo;</p>
+          </div>
+        );
+      }
+
+      function Testimonials() {
+        return (
+          <section id="testimonials" className="bg-ink">
+            <div className="mx-auto max-w-7xl px-4 py-20">
+              <div className="flex items-end justify-between gap-6 flex-wrap">
+                <h2 className="font-display text-3xl sm:text-5xl font-extrabold">
+                  Loved by <span className="text-brand">founders</span>
+                </h2>
+                <div className="text-white/60">
+                  Real results, zero fluff — straight from the teams we support.
+                </div>
+              </div>
+
+              <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                <Testimonial
+                  quote="Thanks to MVP to Production, we launched in a week and scaled to 5k users seamlessly."
+                  name="A. Founder"
+                  role="Founder, Startup"
+                />
+                <Testimonial
+                  quote="They set up our infra so we could focus 100% on product."
+                  name="B. CTO"
+                  role="CTO, SaaS Company"
+                />
+                <Testimonial
+                  quote="Clean pipelines, strong monitoring, and predictable releases — exactly what we needed."
+                  name="C. Co-Founder"
+                  role="Co-Founder, Growth SaaS"
+                />
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Contact() {
+        // Static form designed for GitHub Pages using mailto fallback
+        return (
+          <section id="contact" className="bg-paper">
+            <div className="mx-auto max-w-3xl px-4 py-20">
+              <div className="glass rounded-3xl p-8 sm:p-10">
+                <h3 className="font-display text-2xl sm:text-3xl font-bold">
+                  Tell us about your project
+                </h3>
+                <p className="mt-2 text-white/70">
+                  Prefer a call?{' '}
+                  <a
+                    className="text-brand hover:underline"
+                    href="https://calendly.com/mvptoprod/intro-call"
+                  >
+                    Book a free call
+                  </a>
+                  .
+                </p>
+
+                <form
+                  className="mt-8 grid grid-cols-1 gap-5"
+                  action="mailto:hello@mvptoprod.com"
+                  method="POST"
+                  encType="text/plain"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <input
+                      required
+                      name="name"
+                      placeholder="Your name"
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                    />
+                    <input
+                      required
+                      type="email"
+                      name="email"
+                      placeholder="Your email"
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                    />
+                  </div>
+
+                  <input
+                    name="company"
+                    placeholder="Company"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                  />
+
+                  <select
+                    name="offer"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                  >
+                    <option value="Quick Launch – $497">Quick Launch – $497</option>
+                    <option value="Scaling Services – starting $1,499">
+                      Scaling Services – starting $1,499
+                    </option>
+                    <option value="Full Environment Setup – custom">
+                      Full Environment Setup – custom
+                    </option>
+                  </select>
+
+                  <textarea
+                    name="message"
+                    rows="4"
+                    placeholder="What are you building? Any links or context we should know?"
+                    className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 outline-none focus:border-brand"
+                  ></textarea>
+
+                  <button
+                    type="submit"
+                    className="btn-primary text-ink font-semibold rounded-xl px-6 py-3 shadow-glow"
+                    title="Sends via your email client (works on GitHub Pages)"
+                  >
+                    Submit Inquiry
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function FinalCTA() {
+        return (
+          <section className="relative overflow-hidden">
+            <div className="absolute inset-0 bg-heroGradient" />
+            <div className="relative mx-auto max-w-7xl px-4 py-16">
+              <div className="glass rounded-3xl p-8 sm:p-12 text-center">
+                <h3 className="font-display text-3xl sm:text-5xl font-extrabold">
+                  Ready to take your MVP to <span className="text-brand">production</span>?
+                </h3>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                  <a href="#contact" className="btn-primary text-ink px-6 py-3 rounded-2xl font-semibold shadow-glow">
+                    Get Started for $497
+                  </a>
+                  <a href="#contact" className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30">
+                    Scale My Startup
+                  </a>
+                  <a href="https://calendly.com/mvptoprod/intro-call" className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30">
+                    Book a Free Call
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      function Footer() {
+        return (
+          <footer className="border-t border-white/5 bg-ink">
+            <div className="mx-auto max-w-7xl px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <Logo className="w-8 h-8" />
+                <div>
+                  <p className="font-semibold">MVP to Production</p>
+                  <p className="text-xs text-white/60">mvptoprod.com</p>
+                </div>
+              </div>
+              <div className="text-white/60 text-sm">
+                © <span>{new Date().getFullYear()}</span> MVP to Production. All rights reserved.
+              </div>
+            </div>
+          </footer>
+        );
+      }
+
+      function App() {
+        const offersRef = useRef(null);
+        const scrollToOffers = () => {
+          document.querySelector('#offers')?.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        return (
+          <div className="min-h-screen">
+            <Nav onCTAClick={scrollToOffers} />
+            <Hero onPrimary={scrollToOffers} />
+            <Offers ref={offersRef} />
+            <WhyUs />
+            <Testimonials />
+            <Contact />
+            <FinalCTA />
+            <Footer />
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
