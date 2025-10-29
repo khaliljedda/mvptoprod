@@ -41,6 +41,43 @@
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://mvptoprod.com/" />
+    
+    <!-- Facebook Pixel Code -->
+    <!-- 
+      TO ACTIVATE: 
+      1. Go to Facebook Events Manager (business.facebook.com/events_manager)
+      2. Create a new Pixel or use existing one
+      3. Copy your Pixel ID
+      4. Replace 'YOUR_PIXEL_ID' below with your actual Pixel ID (in 2 places)
+      
+      TRACKED EVENTS:
+      - PageView: Automatic on page load
+      - ViewContent: When users view the Offers section
+      - InitiateCheckout: When users click CTA buttons ($997 and $4,997 offers)
+      - Schedule: When users open Calendly to book a call
+      - Lead: When users submit the contact form
+      - Contact: When users click to contact for custom services
+    -->
+    <script>
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      
+      // Replace 'YOUR_PIXEL_ID' with your actual Facebook Pixel ID
+      fbq('init', 'YOUR_PIXEL_ID');
+      fbq('track', 'PageView');
+    </script>
+    <noscript>
+      <img height="1" width="1" style="display:none"
+      src="https://www.facebook.com/tr?id=YOUR_PIXEL_ID&ev=PageView&noscript=1"/>
+    </noscript>
+    <!-- End Facebook Pixel Code -->
+    
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -255,13 +292,23 @@
                   </div>
                   
                   <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <button
-                      onClick={onPrimary}
-                      className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-8 py-6 rounded-lg animate-pulse hover:animate-none transition-all duration-300 transform hover:scale-105"
-                    >
-                      Get Started for $997
-                      <span className="ml-2">→</span>
-                    </button>
+                  <button
+                    onClick={() => {
+                      if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout', {
+                          value: 997,
+                          currency: 'USD',
+                          content_name: 'Quick Launch',
+                          content_category: 'DevOps Service'
+                        });
+                      }
+                      onPrimary();
+                    }}
+                    className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-8 py-6 rounded-lg animate-pulse hover:animate-none transition-all duration-300 transform hover:scale-105"
+                  >
+                    Get Started for $997
+                    <span className="ml-2">→</span>
+                  </button>
                     <a
                       href="#contact"
                       className="border border-teal-400 text-teal-400 hover:bg-teal-500 hover:text-white text-lg px-8 py-6 rounded-lg transition-all text-center"
@@ -290,8 +337,33 @@
 
 
       function Offers() {
+        const offersRef = React.useRef(null);
+        
+        React.useEffect(() => {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting && typeof fbq !== 'undefined') {
+                  fbq('track', 'ViewContent', {
+                    content_name: 'Offers Section',
+                    content_category: 'Pricing'
+                  });
+                  observer.disconnect();
+                }
+              });
+            },
+            { threshold: 0.5 }
+          );
+
+          if (offersRef.current) {
+            observer.observe(offersRef.current);
+          }
+
+          return () => observer.disconnect();
+        }, []);
+
         return (
-          <section id="offers" className="bg-ink relative">
+          <section ref={offersRef} id="offers" className="bg-ink relative">
             <div className="mx-auto max-w-7xl px-4 py-20">
               <h2 className="font-display text-3xl sm:text-5xl font-extrabold">
                 Choose your path to <span className="text-brand">production</span>
@@ -382,7 +454,21 @@
                   </div>
                   
                   <button 
-                    onClick={() => window.open('https://calendly.com/mvptoprod/30min', '_blank')}
+                    onClick={() => {
+                      if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout', {
+                          value: 997,
+                          currency: 'USD',
+                          content_name: 'Quick Launch',
+                          content_category: 'DevOps Service'
+                        });
+                        fbq('track', 'Schedule', {
+                          value: 997,
+                          currency: 'USD'
+                        });
+                      }
+                      window.open('https://calendly.com/mvptoprod/30min', '_blank');
+                    }}
                     className="w-full btn-primary text-ink py-4 rounded-xl font-semibold shadow-glow text-lg"
                   >
                     👉 Get Started for $997 (Only 3 slots left!)
@@ -478,7 +564,21 @@
                   </div>
                   
                   <button 
-                    onClick={() => window.open('https://calendly.com/mvptoprod/30min', '_blank')}
+                    onClick={() => {
+                      if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout', {
+                          value: 4997,
+                          currency: 'USD',
+                          content_name: 'Cloud Migration',
+                          content_category: 'DevOps Service'
+                        });
+                        fbq('track', 'Schedule', {
+                          value: 4997,
+                          currency: 'USD'
+                        });
+                      }
+                      window.open('https://calendly.com/mvptoprod/30min', '_blank');
+                    }}
                     className="w-full btn-primary text-ink py-4 rounded-xl font-semibold shadow-glow text-lg"
                   >
                     👉 Start Migration for $4,997
@@ -746,6 +846,16 @@
               throw new Error('Form submission failed');
             }
 
+            // Track successful form submission
+            if (typeof fbq !== 'undefined') {
+              fbq('track', 'Lead', {
+                content_name: formData.offer,
+                content_category: 'Contact Form',
+                value: formData.offer.includes('997') ? 997 : (formData.offer.includes('4,997') ? 4997 : 0),
+                currency: 'USD'
+              });
+            }
+
             setFormState({ status: 'success', error: null });
             setFormData({
               name: '',
@@ -896,18 +1006,51 @@
                 </h3>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                   <button 
-                    onClick={() => window.open('https://calendly.com/mvptoprod/30min', '_blank')}
+                    onClick={() => {
+                      if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout', {
+                          value: 997,
+                          currency: 'USD',
+                          content_name: 'Quick Launch - Final CTA',
+                          content_category: 'DevOps Service'
+                        });
+                        fbq('track', 'Schedule');
+                      }
+                      window.open('https://calendly.com/mvptoprod/30min', '_blank');
+                    }}
                     className="btn-primary text-ink px-6 py-3 rounded-2xl font-semibold shadow-glow"
                   >
                     Quick Launch – $997
                   </button>
                   <button 
-                    onClick={() => window.open('https://calendly.com/mvptoprod/30min', '_blank')}
+                    onClick={() => {
+                      if (typeof fbq !== 'undefined') {
+                        fbq('track', 'InitiateCheckout', {
+                          value: 4997,
+                          currency: 'USD',
+                          content_name: 'Cloud Migration - Final CTA',
+                          content_category: 'DevOps Service'
+                        });
+                        fbq('track', 'Schedule');
+                      }
+                      window.open('https://calendly.com/mvptoprod/30min', '_blank');
+                    }}
                     className="px-6 py-3 rounded-2xl border-2 border-brand text-brand hover:bg-brand hover:text-ink transition-all font-semibold"
                   >
                     Cloud Migration – $4,997 ⭐
                   </button>
-                  <a href="#contact" className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30">
+                  <a 
+                    href="#contact"
+                    onClick={() => {
+                      if (typeof fbq !== 'undefined') {
+                        fbq('track', 'Contact', {
+                          content_name: 'Custom DevOps Services',
+                          content_category: 'Contact Form'
+                        });
+                      }
+                    }}
+                    className="px-6 py-3 rounded-2xl border border-white/15 hover:border-white/30"
+                  >
                     Custom DevOps Services
                   </a>
                 </div>
